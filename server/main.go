@@ -24,6 +24,7 @@ func main() {
 	router.Use(
 		middleware.Recover(lg),
 		middleware.Logger(lg),
+		middleware.EnableCORS(&middleware.CorsOptions{}),
 	)
 
 	api := handler.New(nil)

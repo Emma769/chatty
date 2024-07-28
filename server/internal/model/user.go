@@ -28,9 +28,15 @@ func (in UserIn) Validate() error {
 	return validator.Check(
 		validator.New(),
 		in,
-		func(i UserIn) (bool, string) { return i.Username != "", "username:cannot be blank" },
-		func(i UserIn) (bool, string) { return i.Email != "", "email:cannot be blank" },
-		func(i UserIn) (bool, string) { return i.Password != "", "password:cannot be blank" },
+		func(i UserIn) (bool, string) {
+			return i.Username != "", "username:cannot be blank"
+		},
+		func(i UserIn) (bool, string) {
+			return i.Email != "", "email:cannot be blank"
+		},
+		func(i UserIn) (bool, string) {
+			return i.Password != "", "password:cannot be blank"
+		},
 		func(i UserIn) (bool, string) {
 			return funclib.ValidEmail(i.Email), "email:provide a valid email"
 		},

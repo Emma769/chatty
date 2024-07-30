@@ -16,3 +16,7 @@ func WriteJsonE(w http.ResponseWriter, code int, value any) error {
 	w.WriteHeader(code)
 	return json.NewEncoder(w).Encode(value)
 }
+
+func ReadJson(w http.ResponseWriter, r *http.Request, value any) error {
+	return nil
+}

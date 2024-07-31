@@ -16,9 +16,8 @@ type CreateUserParam struct {
 func (q *Queries) CreateUser(ctx context.Context, param CreateUserParam) (*model.User, error) {
 	query := `
   INSERT INTO users (username, email, password) VALUES ($1, $2, $3)
-  RETURNING
-    user_id, username, email, password,
-    version, created_at, updated_at, deleted_at;
+  RETURNING user_id, username, email, password,
+  version, created_at, updated_at, deleted_at;
   `
 
 	row := q.db.QueryRowContext(ctx, query, param.Username, param.Email, param.Password)

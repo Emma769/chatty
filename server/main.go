@@ -17,6 +17,7 @@ import (
 	"github.com/emma769/chatty/internal/repository/psql"
 	"github.com/emma769/chatty/internal/server"
 	"github.com/emma769/chatty/internal/services/user"
+	"github.com/emma769/chatty/pkg/passlib"
 )
 
 func main() {
@@ -65,7 +66,7 @@ func main() {
 		}),
 	)
 
-	userService := user.NewService(store)
+	userService := user.NewService(store, passlib.New())
 
 	api := handler.New(&handler.Service{
 		User: userService,

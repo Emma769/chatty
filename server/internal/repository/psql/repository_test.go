@@ -1,8 +1,17 @@
 package psql
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/emma769/chatty/internal/config"
+)
 
 func newTestRepo(t *testing.T) *Repository {
-	t.Cleanup(func() {})
-	return nil
+	repo, err := NewRepository(&config.Getter{})
+	if err != nil {
+		t.FailNow()
+	}
+
+	t.Cleanup(func() { _ = repo.Close() })
+	return repo
 }

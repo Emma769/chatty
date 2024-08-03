@@ -1,4 +1,4 @@
-package user
+package user_test
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"github.com/emma769/chatty/internal/model"
 	"github.com/emma769/chatty/internal/repository"
 	"github.com/emma769/chatty/internal/repository/psql"
+	"github.com/emma769/chatty/internal/services/user"
 	"github.com/emma769/chatty/pkg/funclib"
 )
 
@@ -40,18 +41,16 @@ func (h hashStub) Hash(plain string) ([]byte, error) {
 }
 
 func TestService_Create(t *testing.T) {
-	type arg struct {
-		name string
-		ctx  context.Context
-		svc  *Service
-		in   model.UserIn
-	}
-
 	for range 5 {
-		tc := arg{
+		tc := struct {
+			name string
+			ctx  context.Context
+			svc  *user.Service
+			in   model.UserIn
+		}{
 			name: fmt.Sprintf("%s_create", funclib.RandString(10)),
 			ctx:  context.Background(),
-			svc:  NewService(&storeStub{}, &hashStub{}),
+			svc:  user.NewService(&storeStub{}, &hashStub{}),
 			in: model.UserIn{
 				Username: funclib.RandName(),
 				Email:    funclib.RandEmail(),
@@ -70,18 +69,16 @@ func TestService_Create(t *testing.T) {
 }
 
 func TestService_Create_ReturnsHasherError(t *testing.T) {
-	type arg struct {
-		name string
-		ctx  context.Context
-		svc  *Service
-		in   model.UserIn
-	}
-
 	for range 3 {
-		tc := arg{
+		tc := struct {
+			name string
+			ctx  context.Context
+			svc  *user.Service
+			in   model.UserIn
+		}{
 			name: fmt.Sprintf("%s_create", funclib.RandString(10)),
 			ctx:  context.Background(),
-			svc:  NewService(&storeStub{}, &hashStub{errors.New("invalid arg")}),
+			svc:  user.NewService(&storeStub{}, &hashStub{errors.New("invalid arg")}),
 			in: model.UserIn{
 				Username: funclib.RandName(),
 				Email:    funclib.RandEmail(),
@@ -98,18 +95,18 @@ func TestService_Create_ReturnsHasherError(t *testing.T) {
 }
 
 func TestService_Create_ReturnsStorerError(t *testing.T) {
-	type arg struct {
-		name string
-		ctx  context.Context
-		svc  *Service
-		in   model.UserIn
-	}
+	type arg struct{}
 
 	for range 3 {
-		tc := arg{
+		tc := struct {
+			name string
+			ctx  context.Context
+			svc  *user.Service
+			in   model.UserIn
+		}{
 			name: fmt.Sprintf("%s_create", funclib.RandString(10)),
 			ctx:  context.Background(),
-			svc:  NewService(&storeStub{repository.ErrDuplicateKey}, &hashStub{}),
+			svc:  user.NewService(&storeStub{repository.ErrDuplicateKey}, &hashStub{}),
 			in: model.UserIn{
 				Username: funclib.RandName(),
 				Email:    funclib.RandEmail(),

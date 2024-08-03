@@ -13,15 +13,13 @@ import (
 )
 
 func TestQueries_CreateUser(t *testing.T) {
-	type arg struct {
-		name  string
-		ctx   context.Context
-		repo  *Repository
-		param CreateUserParam
-	}
-
 	for range 3 {
-		tc := arg{
+		tc := struct {
+			name  string
+			ctx   context.Context
+			repo  *Repository
+			param CreateUserParam
+		}{
 			name: fmt.Sprintf("%s_create_user", funclib.RandString(10)),
 			ctx:  context.Background(),
 			repo: newTestRepo(t),
@@ -46,15 +44,13 @@ func TestQueries_CreateUser(t *testing.T) {
 func createUser(t *testing.T, n int) []*model.User {
 	users := []*model.User{}
 
-	type arg struct {
-		name  string
-		ctx   context.Context
-		repo  *Repository
-		param CreateUserParam
-	}
-
 	for range n {
-		tc := arg{
+		tc := struct {
+			name  string
+			ctx   context.Context
+			repo  *Repository
+			param CreateUserParam
+		}{
 			name: fmt.Sprintf("%s_create_user", funclib.RandString(10)),
 			ctx:  context.Background(),
 			repo: newTestRepo(t),
@@ -79,15 +75,13 @@ func createUser(t *testing.T, n int) []*model.User {
 func TestQueries_CreateUser_ReturnsDuplicateKeyError(t *testing.T) {
 	users := createUser(t, 3)
 
-	type arg struct {
-		name  string
-		ctx   context.Context
-		repo  *Repository
-		param CreateUserParam
-	}
-
 	for _, user := range users {
-		tc := arg{
+		tc := struct {
+			name  string
+			ctx   context.Context
+			repo  *Repository
+			param CreateUserParam
+		}{
 			name: fmt.Sprintf("%s_create_user", funclib.RandString(10)),
 			ctx:  context.Background(),
 			repo: newTestRepo(t),

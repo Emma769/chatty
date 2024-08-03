@@ -68,9 +68,11 @@ func main() {
 
 	userService := user.NewService(store, passlib.New())
 
-	api := handler.New(&handler.Service{
+	handlerService := &handler.Service{
 		User: userService,
-	})
+	}
+
+	api := handler.New(handlerService)
 
 	api.Register(router)
 

@@ -17,8 +17,8 @@ func ValidEmail(s string) bool {
 	return err == nil
 }
 
-func Gte[T cmp.Ordered](a, b T) bool { return a > b }
-func Lte[T cmp.Ordered](a, b T) bool { return a < b }
+func Gte[T cmp.Ordered](a, b T) bool { return a >= b }
+func Lte[T cmp.Ordered](a, b T) bool { return a <= b }
 
 func AsciiLower() string {
 	var b strings.Builder
@@ -50,8 +50,12 @@ func Shuffle[T any](ts []T) []T {
 	return ts
 }
 
+func RandInt(mn, mx int) int {
+	return rand.Intn(mx-mn) + mn
+}
+
 func RandName() string {
-	s := RandString(7)
+	s := RandString(RandInt(5, 10))
 	return strings.ToUpper(string(s[0])) + string(s[1:])
 }
 

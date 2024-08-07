@@ -5,6 +5,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import Nav from "./components/Nav";
 import "./styles/main.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -26,7 +27,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <div className="container">
+      <Nav />
+      <Outlet />
+    </div>
+  );
 }
 
 export function HydrateFallback() {

@@ -7,23 +7,21 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/emma769/chatty/internal/config"
 )
 
 type logger interface {
 	Info(string, ...any)
 }
 
-type getter interface {
-	GetInt(string, int) int
-}
-
 type App struct {
 	lg     logger
 	router http.Handler
-	cfg    getter
+	cfg    *config.Config
 }
 
-func New(logger logger, router http.Handler, cfg getter) *App {
+func New(logger logger, router http.Handler, cfg *config.Config) *App {
 	return &App{
 		logger,
 		router,
@@ -33,9 +31,9 @@ func New(logger logger, router http.Handler, cfg getter) *App {
 
 func (a *App) Run(ctx context.Context) error {
 	s := &http.Server{
-		Addr:         fmt.Sprintf(":%d", a.cfg.GetInt("PORT", 8000)),
-		ReadTimeout:  time.Duration(a.cfg.GetInt("READ_TIMEOUT", 15)) * time.Second,
-		WriteTimeout: time.Duration(a.cfg.GetInt("WRITE_TIMEOUT", 15)) * time.Second,
+		Addr:         fmt.Sprintf(":%d", a.cfg.PORT),
+		ReadTimeout:  time.Duration(a.cfg.READ_TIMEOUT) * time.Second,
+		WriteTimeout: time.Duration(a.cfg.WRITE_TIMEOUT) * time.Second,
 		Handler:      a.router,
 	}
 

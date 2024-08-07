@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+
+	"github.com/emma769/chatty/internal/config"
 )
 
 const DRIVER_NAME = "postgres"
@@ -31,19 +33,12 @@ type Repository struct {
 	db *sql.DB
 }
 
-type getter interface {
-	Get(string, string) string
-	GetInt(string, int) int
-}
-
-func NewRepository(cfg getter) (*Repository, error) {
-	uri := cfg.Get("POSTGRES_URI", "")
-
-	if uri == "" {
+func NewRepository(cfg *config.Config) (*Repository, error) {
+	if cfg.POSTGRES_URI == "" {
 		return nil, errors.New("postgres uri cannot be blank")
 	}
 
-	url, err := pq.ParseURL(uri)
+	url, err := pq.ParseURL(cfg.POSTGRES_URI)
 	if err != nil {
 		return nil, err
 	}
@@ -53,11 +48,9 @@ func NewRepository(cfg getter) (*Repository, error) {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(cfg.GetInt("DB_MAX_OPEN_CONNS", 25))
-	db.SetMaxIdleConns(cfg.GetInt("DB_MAX_IDLE_CONNS", 25))
-
-	maxIdleTime := cfg.GetInt("DB_CONN_MAX_IDLE_TIME", 15)
-	db.SetConnMaxIdleTime(time.Duration(maxIdleTime) * time.Second)
+	db.SetMaxOpenConns(cfg.DB_MAX_OPEN_CONNS)
+	db.SetMaxIdleConns(cfg.DB_MAX_IDLE_CONNS)
+	db.SetConnMaxIdleTime(time.Duration(cfg.DB_CONN_MAX_IDLE_TIME) * time.Second)
 
 	repository := &Repository{
 		newQueries(db),

@@ -25,7 +25,7 @@ func main() {
 		log.Fatalf("could not load .env file: %v", err)
 	}
 
-	cfg := &config.Getter{}
+	cfg := config.Load()
 	lg := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
 
 	store, err := psql.NewRepository(cfg)

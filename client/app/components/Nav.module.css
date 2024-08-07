@@ -1,0 +1,30 @@
+.wrapper {
+  padding: 1em 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wrapper a {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.wrapper a:hover {
+  color: #333;
+}
+
+.logo {
+  font-family: var(--secondary-font);
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+
+.navlinks {
+  padding-inline-start: 0;
+}
+
+.navlink {
+  list-style-type: none;
+}

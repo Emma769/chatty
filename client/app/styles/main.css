@@ -1,8 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Grey+Qo&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poiret+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
 :root {
   --primary-font: "Rubik", sans-serif;
-  --secondary-font: "Grey Qo", cursive;
+  --secondary-font: "Poiret One", sans-serif;
+  --alt-clr: #cb90f0;
 }
 
 *,
@@ -23,4 +24,8 @@ button {
 .container {
   width: min(760px, 90%);
   margin: 0 auto;
+}
+
+a:active {
+  color: inherit;
 }

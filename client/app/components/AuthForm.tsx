@@ -1,7 +1,7 @@
 import { Link, useFetcher } from "@remix-run/react";
-import styles from "./AuthForm.module.css";
 import { useRef } from "react";
 import { useFocus } from "~/hooks/useFocus";
+import styles from "./AuthForm.module.css";
 
 export const AUTH_INTENT = {
   register: "register",
@@ -33,7 +33,9 @@ function AuthForm({ kind }: AuthFormProps) {
 
   return (
     <div className={styles.wrapper}>
-      <p>{kind === "register" ? "Register" : "Login"}</p>
+      <p className={styles.title}>
+        {kind === "register" ? "Register" : "Login"}
+      </p>
       <fetcher.Form onSubmit={handleSubmit}>
         <input
           type="hidden"
@@ -41,20 +43,34 @@ function AuthForm({ kind }: AuthFormProps) {
           value={kind === "register" ? AUTH_INTENT.register : AUTH_INTENT.login}
         />
         {kind === "register" && (
-          <div>
-            <label>Username:</label>
-            <input type="text" ref={usernameRef} name="username" />
+          <div className={styles.group}>
+            <input
+              type="text"
+              ref={usernameRef}
+              name="username"
+              required
+              autoComplete="off"
+              spellCheck="false"
+            />
+            <label>Username</label>
           </div>
         )}
-        <div>
-          <label>Email:</label>
-          <input type="email" ref={emailRef} name="email" />
+        <div className={styles.group}>
+          <input
+            type="email"
+            ref={emailRef}
+            name="email"
+            required
+            autoComplete="off"
+            spellCheck="false"
+          />
+          <label>Email</label>
         </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" name="password" />
+        <div className={styles.group}>
+          <input type="password" name="password" required autoComplete="off" />
+          <label>Password</label>
         </div>
-        <div>
+        <div className={styles.btn_wrapper}>
           <button>{kind === "register" ? "Register" : "Login"}</button>
         </div>
       </fetcher.Form>

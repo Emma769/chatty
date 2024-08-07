@@ -1,2 +1,69 @@
 .wrapper {
+  width: min(calc(760px / 1.8), 90%);
+  margin: 4em auto;
+}
+
+.title {
+  text-align: center;
+  margin-block-end: 1.5em;
+}
+
+.group {
+  margin-block-end: 1em;
+  position: relative;
+}
+
+.group input {
+  width: 100%;
+  padding: 0.8em;
+  font-family: inherit;
+  border: 0.5px solid #555;
+  border-radius: 2px;
+}
+
+.group input:focus {
+  border: 0.5px solid var(--alt-clr);
+  outline: 0.5px solid transparent;
+}
+
+.group label {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  left: 0.8em;
+  font-size: 14px;
+  color: #555;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.group input:focus ~ label,
+.group input:valid ~ label {
+  top: 0;
+  background-color: white;
+  padding-inline: 0.3em;
+  font-size: 11.5px;
+}
+
+.btn_wrapper button {
+  width: 100%;
+  padding: 0.8em;
+  font-weight: 500;
+  background-color: #c1c1c1;
+  border: none;
+  border-radius: 2px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btn_wrapper button:hover {
+  cursor: pointer;
+  background-color: var(--alt-clr);
+}
+
+.btn_wrapper button:focus {
+  outline: 0.5px solid #555;
+}
+
+.footer {
+  margin-block-start: 1em;
 }

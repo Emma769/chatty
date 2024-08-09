@@ -57,7 +57,7 @@ function AuthForm({ kind }: AuthFormProps) {
         )}
         <div className={styles.group}>
           <input
-            type="email"
+            type="text"
             ref={emailRef}
             name="email"
             required

@@ -26,7 +26,8 @@ func main() {
 	}
 
 	cfg := config.New()
-	lg := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
 
 	store, err := psql.NewRepository(cfg)
 	if err != nil {
@@ -46,8 +47,8 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(
-		middleware.Recover(lg),
-		middleware.Logger(lg),
+		middleware.Recover(logger),
+		middleware.Logger(logger),
 		middleware.EnableCORS(&middleware.CorsOptions{
 			AllowOrigins: []string{"http://localhost:3000", "http://127.0.0.1:3000"},
 			AllowMethods: []string{
@@ -76,7 +77,7 @@ func main() {
 
 	api.Register(router)
 
-	app := server.New(lg, router, cfg)
+	app := server.New(logger, router, cfg)
 
 	ctx := context.Background()
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)

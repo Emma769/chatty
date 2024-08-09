@@ -1,11 +1,6 @@
 package model
 
-import (
-	"time"
-
-	"github.com/emma769/chatty/pkg/funclib"
-	"github.com/emma769/chatty/pkg/validator"
-)
+import "time"
 
 type User struct {
 	UserID    string     `json:"user_id"`
@@ -19,32 +14,7 @@ type User struct {
 }
 
 type UserIn struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func (in UserIn) Validate() error {
-	return validator.Check(
-		validator.New(),
-		in,
-		func(i UserIn) (bool, string) {
-			return i.Username != "", "username:cannot be blank"
-		},
-		func(i UserIn) (bool, string) {
-			return i.Email != "", "email:cannot be blank"
-		},
-		func(i UserIn) (bool, string) {
-			return i.Password != "", "password:cannot be blank"
-		},
-		func(i UserIn) (bool, string) {
-			return funclib.ValidEmail(i.Email), "email:provide a valid email"
-		},
-		func(i UserIn) (bool, string) {
-			return funclib.Gte(len(i.Password), 8), "password:cannot be less than 8 characters"
-		},
-		func(i UserIn) (bool, string) {
-			return funclib.Lte(len(i.Password), 50), "password:cannot be more 50 characters"
-		},
-	)
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email"    validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
 }

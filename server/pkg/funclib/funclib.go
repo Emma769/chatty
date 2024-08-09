@@ -17,7 +17,12 @@ func ValidEmail(s string) bool {
 	return err == nil
 }
 
+func ValidString(s string) bool {
+	return len(strings.TrimSpace(s)) != 0
+}
+
 func Gte[T cmp.Ordered](a, b T) bool { return a >= b }
+func Gt[T cmp.Ordered](a, b T) bool  { return a > b }
 func Lte[T cmp.Ordered](a, b T) bool { return a <= b }
 
 func AsciiLower() string {

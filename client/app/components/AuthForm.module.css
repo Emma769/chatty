@@ -9,7 +9,6 @@
 }
 
 .group {
-  margin-block-end: 1em;
   position: relative;
 }
 
@@ -66,4 +65,11 @@
 
 .footer {
   margin-block-start: 1em;
+}
+
+.danger {
+  margin-block-end: 1em;
+  font-size: 12px;
+  color: red;
+  height: 0.8em;
 }

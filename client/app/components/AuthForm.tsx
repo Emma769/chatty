@@ -11,7 +11,10 @@ export const AUTH_INTENT = {
 type AuthFormProps = { kind: "register" } | { kind: "login" };
 
 function AuthForm({ kind }: AuthFormProps) {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<{ errors: Record<string, string> }>();
+
+  const data = fetcher.data;
+  const errors = data?.errors;
 
   const usernameRef = useRef<HTMLInputElement | null>(null);
   const emailRef = useRef<HTMLInputElement | null>(null);
@@ -43,33 +46,51 @@ function AuthForm({ kind }: AuthFormProps) {
           value={kind === "register" ? AUTH_INTENT.register : AUTH_INTENT.login}
         />
         {kind === "register" && (
+          <>
+            <div className={styles.group}>
+              <input
+                type="text"
+                ref={usernameRef}
+                name="username"
+                required
+                autoComplete="off"
+                spellCheck="false"
+              />
+              <label>Username</label>
+            </div>
+            <div className={styles.danger}>
+              {errors?.username && errors.username}
+            </div>
+          </>
+        )}
+        <>
           <div className={styles.group}>
             <input
               type="text"
-              ref={usernameRef}
-              name="username"
+              ref={emailRef}
+              name="email"
               required
               autoComplete="off"
               spellCheck="false"
             />
-            <label>Username</label>
+            <label>Email</label>
           </div>
-        )}
-        <div className={styles.group}>
-          <input
-            type="text"
-            ref={emailRef}
-            name="email"
-            required
-            autoComplete="off"
-            spellCheck="false"
-          />
-          <label>Email</label>
-        </div>
-        <div className={styles.group}>
-          <input type="password" name="password" required autoComplete="off" />
-          <label>Password</label>
-        </div>
+          <div className={styles.danger}>{errors?.email && errors.email}</div>
+        </>
+        <>
+          <div className={styles.group}>
+            <input
+              type="password"
+              name="password"
+              required
+              autoComplete="off"
+            />
+            <label>Password</label>
+          </div>
+          <div className={styles.danger}>
+            {errors?.password && errors.password}
+          </div>
+        </>
         <div className={styles.btn_wrapper}>
           <button>{kind === "register" ? "Register" : "Login"}</button>
         </div>

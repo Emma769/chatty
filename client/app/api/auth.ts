@@ -1,9 +1,7 @@
 import { BASE_URL } from "~/constants";
 import type { User } from "~/types/user";
 
-export type RegisterParam = {
-  username: string;
-  email: string;
+export type RegisterParam = Pick<User, "username" | "email"> & {
   password: string;
 };
 
@@ -37,4 +35,6 @@ export const register = async (param: RegisterParam) => {
   return payload;
 };
 
-export const login = async () => { };
+export type LoginParam = Pick<RegisterParam, "email" | "password">;
+
+export const login = async (param: LoginParam) => { };

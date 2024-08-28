@@ -26,8 +26,8 @@ export const register = async (param: RegisterParam) => {
 
   if (!resp.ok) throw new Error("non-2** response", { cause: { resp } });
   const payload = await resp.json();
-  if (isUserPayload(payload)) return payload;
-  throw new Error("invalid user payload");
+  if (!isUserPayload(payload)) throw new Error("invalid user payload");
+  return payload;
 };
 
 export type LoginParam = Pick<RegisterParam, "email" | "password">;
@@ -50,6 +50,6 @@ export const login = async (param: LoginParam) => {
 
   if (!resp.ok) throw new Error("non-2** resp", { cause: { resp } });
   const payload = await resp.json();
-  if (isTokenPayload(payload)) return payload;
-  throw new Error("invalid token payload");
+  if (!isTokenPayload(payload)) throw new Error("invalid token payload");
+  return payload;
 };

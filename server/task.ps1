@@ -2,7 +2,7 @@
 param (
   [Parameter(Mandatory=$true)]$action,
   [Parameter()]$postgres_uri="postgres://postgres:postgres@localhost:5432/chatty?sslmode=disable",
-  [Parameter()]$port=6000
+  [Parameter()]$port=9000
 )
   
 begin {

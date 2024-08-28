@@ -1,6 +1,7 @@
 import {
   isRouteErrorResponse,
   json,
+  redirect,
   useRouteError,
   type ClientActionFunctionArgs,
 } from "@remix-run/react";
@@ -42,24 +43,10 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
     if (!valid) return json({ errors });
 
     try {
-      const payload = await login(param);
-      console.log(payload);
+      const tokens = await login(param);
+      return redirect("/");
     } catch (error) {
-      if (error instanceof Error) {
-        const resp: Response = (error.cause as any)?.resp;
-        const payload = await resp.json();
-
-        switch (resp.status) {
-          case 422:
-            return json({ errors: payload });
-          default:
-            throw new Response(payload?.detail ?? "unknown error", {
-              status: resp.status,
-            });
-        }
-      }
-
-      return null;
+      console.log(error);
     }
   }
 

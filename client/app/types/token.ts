@@ -11,7 +11,7 @@ export type RefreshToken = {
 };
 
 export type TokenPayload = {
+  user: User;
   access_token: AccessToken;
   refresh_token?: RefreshToken;
-  user: User;
 };

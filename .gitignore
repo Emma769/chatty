@@ -3,3 +3,4 @@ client/.env
 server/bin
 server/.env
 server/cover.out
+server/task.ps1

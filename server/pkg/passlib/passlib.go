@@ -1,33 +1,11 @@
 package passlib
 
-import (
-	"errors"
+import "golang.org/x/crypto/bcrypt"
 
-	"golang.org/x/crypto/bcrypt"
-)
-
-type Passlib struct {
-	cost int
+func Hash(plain string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(plain), bcrypt.DefaultCost)
 }
 
-func New() *Passlib {
-	return &Passlib{bcrypt.DefaultCost}
-}
-
-func (p Passlib) Hash(pl string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(pl), p.cost)
-}
-
-func (p Passlib) Verify(pl string, hash []byte) (bool, error) {
-	err := bcrypt.CompareHashAndPassword(hash, []byte(pl))
-
-	if err != nil && errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-		return false, nil
-	}
-
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
+func IsMatch(plain string, hash []byte) bool {
+	return bcrypt.CompareHashAndPassword(hash, []byte(plain)) == nil
 }

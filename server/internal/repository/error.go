@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-var ErrDuplicateKey = errors.New("duplicate key")
+var (
+	ErrDuplicateKey = errors.New("duplicate key")
+	ErrNotFound     = errors.New("not found")
+)
 
 func DuplicateKey(err error) bool {
 	if err == nil {

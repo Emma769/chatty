@@ -2,54 +2,85 @@ package validator
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
-
-	"github.com/emma769/chatty/pkg/funclib"
+	"sync"
 )
 
-func ValidateStruct(v any) error {
+var (
+	ErrUnknownValidationFn = errors.New("unknown validation function")
+	ErrNoArg               = errors.New("no arg")
+)
+
+type Validator struct {
+	mu    *sync.Mutex
+	rules map[string]Validationfn
+	errs  map[string]string
+}
+
+func New() *Validator {
+	rules := map[string]Validationfn{
+		"required": requireString,
+		"min":      minlength,
+		"email":    validEmail,
+	}
+
+	return &Validator{
+		&sync.Mutex{},
+		rules,
+		map[string]string{},
+	}
+}
+
+func (v Validator) valid() bool {
+	return len(v.errs) == 0
+}
+
+func (v *Validator) add(key, msg string) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+
+	if _, ok := v.errs[key]; !ok {
+		v.errs[key] = msg
+	}
+}
+
+func (validator *Validator) ValidateStruct(v any) map[string]string {
 	val := reflect.ValueOf(v)
 
 	for i := 0; i < val.NumField(); i++ {
-		fieldvalue := val.Field(i)
-
-		validateTags := val.Type().Field(i).Tag.Get("validate")
+		value := val.Field(i)
+		validationTags := val.Type().Field(i).Tag.Get("validate")
 		jsonTag := val.Type().Field(i).Tag.Get("json")
 
-		if validateTags == "" {
+		if validationTags == "" {
 			continue
 		}
 
-		rules := strings.Split(validateTags, ",")
+		validationRules := strings.Split(validationTags, ",")
 
-		for _, rule := range rules {
-			parts := strings.Split(rule, "=")
-			validationfn, args := parts[0], parts[1:]
-
-			switch validationfn {
-			case "required":
-				if !funclib.ValidString(fieldvalue.String()) {
-					return fmt.Errorf("%s cannot be blank", jsonTag)
-				}
-			case "email":
-				if !funclib.ValidEmail(fieldvalue.String()) {
-					return errors.New("provide a valid email")
-				}
-			case "min":
-				if len(args) == 0 {
-					panic("invalid validation function usage: <min=[value]>")
-				}
-
-				arg, _ := strconv.Atoi(args[0])
-				if !funclib.Gte(len(fieldvalue.String()), arg) {
-					return fmt.Errorf("%s cannot be less than %d", jsonTag, arg)
-				}
-			}
+		for _, validationRule := range validationRules {
+			parts := strings.Split(validationRule, "=")
+			fnName, args := parts[0], parts[1:]
+			validator.apply(value, fnName, args, jsonTag)
 		}
 	}
 
+	if !validator.valid() {
+		return validator.errs
+	}
+
 	return nil
+}
+
+func (validator *Validator) apply(v reflect.Value, fnName string, args []string, name string) {
+	fn, ok := validator.rules[fnName]
+
+	if !ok {
+		panic(ErrUnknownValidationFn)
+	}
+
+	if err := fn(v, args, name); err != nil {
+		validator.add(name, err.Error())
+	}
 }

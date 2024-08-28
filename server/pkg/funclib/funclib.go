@@ -64,8 +64,7 @@ func RandName() string {
 	return strings.ToUpper(string(s[0])) + string(s[1:])
 }
 
-var domains = []string{"gmail", "yahoo", "hotmail", "msn"}
-
 func RandEmail() string {
+	domains := []string{"gmail", "yahoo", "hotmail", "msn"}
 	return fmt.Sprintf("%s@%s.com", RandString(7), domains[rand.Intn(len(domains)-1)])
 }

@@ -12,20 +12,12 @@ type AuthFormProps = { kind: "register" } | { kind: "login" };
 
 function AuthForm({ kind }: AuthFormProps) {
   const fetcher = useFetcher<{ errors: Record<string, string> }>();
-
-  const data = fetcher.data;
-  const errors = data?.errors;
+  const errors = fetcher.data?.errors;
 
   const usernameRef = useRef<HTMLInputElement | null>(null);
   const emailRef = useRef<HTMLInputElement | null>(null);
 
-  if (kind === "register") {
-    useFocus(usernameRef);
-  }
-
-  if (kind === "login") {
-    useFocus(emailRef);
-  }
+  useFocus(kind === "register" ? usernameRef : emailRef);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,6 +47,8 @@ function AuthForm({ kind }: AuthFormProps) {
                 required
                 autoComplete="off"
                 spellCheck="false"
+                placeholder="username"
+                id={errors?.username ? styles["warn-username"] : undefined}
               />
               <label>Username</label>
             </div>
@@ -66,12 +60,14 @@ function AuthForm({ kind }: AuthFormProps) {
         <>
           <div className={styles.group}>
             <input
-              type="text"
+              type="email"
               ref={emailRef}
               name="email"
               required
               autoComplete="off"
               spellCheck="false"
+              placeholder="email"
+              id={errors?.email ? styles["warn-email"] : undefined}
             />
             <label>Email</label>
           </div>
@@ -84,6 +80,9 @@ function AuthForm({ kind }: AuthFormProps) {
               name="password"
               required
               autoComplete="off"
+              minLength={kind === "register" ? 8 : undefined}
+              placeholder="password"
+              id={errors?.password ? styles["warn-password"] : undefined}
             />
             <label>Password</label>
           </div>

@@ -1,4 +1,5 @@
 import { BASE_URL } from "~/constants";
+import { TokenPayload } from "~/types/token";
 import type { User } from "~/types/user";
 
 export type RegisterParam = Pick<User, "username" | "email"> & {
@@ -23,18 +24,32 @@ export const register = async (param: RegisterParam) => {
     body: JSON.stringify(param),
   });
 
-  if (!resp.ok) {
-    const payload = await resp.json();
-    throw new Error(payload?.detail ?? resp.statusText);
-  }
-
+  if (!resp.ok) throw new Error("non-2** response", { cause: { resp } });
   const payload = await resp.json();
-
-  if (!isUserPayload(payload)) throw new Error("invalid user payload");
-
-  return payload;
+  if (isUserPayload(payload)) return payload;
+  throw new Error("invalid user payload");
 };
 
 export type LoginParam = Pick<RegisterParam, "email" | "password">;
 
-export const login = async (param: LoginParam) => { };
+const isTokenPayload = (payload: unknown): payload is TokenPayload => {
+  return (
+    payload !== null &&
+    typeof payload === "object" &&
+    "access_token" in payload &&
+    "user" in payload
+  );
+};
+
+export const login = async (param: LoginParam) => {
+  const resp = await fetch(`${BASE_URL}/api/tokens/login`, {
+    method: "POST",
+    headers: new Headers([["Content-Type", "application/json"]]),
+    body: JSON.stringify(param),
+  });
+
+  if (!resp.ok) throw new Error("non-2** resp", { cause: { resp } });
+  const payload = await resp.json();
+  if (isTokenPayload(payload)) return payload;
+  throw new Error("invalid token payload");
+};

@@ -53,16 +53,23 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
 
     const { valid, errors } = validate(param, ...valfns);
 
-    if (!valid) {
-      return json({ errors });
-    }
+    if (!valid) return json({ errors });
 
     try {
       await register(param);
       return redirect("/login");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "unknown error";
-      throw new Response(message, { status: 400 });
+      if (error instanceof Error) {
+        const resp: Response = (error.cause as any)?.resp;
+        const payload = await resp.json();
+
+        switch (resp.status) {
+          case 422:
+            return json({ errors: payload });
+          default:
+            throw new Response(payload.detail, { status: resp.status });
+        }
+      }
     }
   }
 

@@ -4,7 +4,7 @@ import {
   useRouteError,
   type ClientActionFunctionArgs,
 } from "@remix-run/react";
-import { type LoginParam } from "~/api/auth";
+import { login, type LoginParam } from "~/api/auth";
 import AuthForm, { AUTH_INTENT } from "~/components/AuthForm";
 import { dictMap, validEmail, validString } from "~/utils/funcs";
 import { validate, type Validationfn } from "~/utils/validator";
@@ -21,7 +21,7 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
   if (action === AUTH_INTENT.login) {
     const { email, password } = dictMap(data, (d) => d.toString());
 
-    const param = {
+    const param: LoginParam = {
       email,
       password,
     };
@@ -39,9 +39,27 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
     ];
 
     const { valid, errors } = validate(param, ...valfns);
+    if (!valid) return json({ errors });
 
-    if (!valid) {
-      return json({ errors });
+    try {
+      const payload = await login(param);
+      console.log(payload);
+    } catch (error) {
+      if (error instanceof Error) {
+        const resp: Response = (error.cause as any)?.resp;
+        const payload = await resp.json();
+
+        switch (resp.status) {
+          case 422:
+            return json({ errors: payload });
+          default:
+            throw new Response(payload?.detail ?? "unknown error", {
+              status: resp.status,
+            });
+        }
+      }
+
+      return null;
     }
   }
 

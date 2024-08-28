@@ -1,18 +1,23 @@
 package handler
 
 import (
-	"github.com/go-chi/chi/v5"
+	"net/http"
 
-	"github.com/emma769/chatty/internal/utils"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func (h *Handler) Register(router *chi.Mux) {
-	api := chi.NewRouter()
-	api.Route("/users", h.userRoutes)
+func (h *Handler) ApiRoutes() http.Handler {
+	e := echo.New()
 
-	router.Mount("/api", api)
-}
+	e.Use(
+		middleware.RecoverWithConfig(middleware.DefaultRecoverConfig),
+		middleware.LoggerWithConfig(middleware.DefaultLoggerConfig),
+	)
 
-func (h *Handler) userRoutes(r chi.Router) {
-	r.Post("/", utils.Wrap[*HandlerError](h.CreateUser))
+	e.POST("/api/users", h.CreateUser)
+
+	e.POST("/api/tokens/login", h.CreateToken)
+
+	return e
 }

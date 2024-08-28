@@ -1,17 +1,15 @@
 package psql
 
 import (
+	"cmp"
 	"context"
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/lib/pq"
-
-	"github.com/emma769/chatty/internal/config"
 )
 
-const DRIVER_NAME = "postgres"
+var driver = "postgres"
 
 type dbtx interface {
 	PrepareContext(context.Context, string) (*sql.Stmt, error)
@@ -25,7 +23,7 @@ type Queries struct {
 }
 
 func newQueries(db dbtx) *Queries {
-	return &Queries{db}
+	return &Queries{db: db}
 }
 
 type Repository struct {
@@ -33,35 +31,34 @@ type Repository struct {
 	db *sql.DB
 }
 
-func NewRepository(cfg *config.Config) (*Repository, error) {
-	if cfg.POSTGRES_URI == "" {
-		return nil, errors.New("postgres uri cannot be blank")
-	}
-
-	url, err := pq.ParseURL(cfg.POSTGRES_URI)
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := sql.Open(DRIVER_NAME, url)
-	if err != nil {
-		return nil, err
-	}
-
-	db.SetMaxOpenConns(cfg.DB_MAX_OPEN_CONNS)
-	db.SetMaxIdleConns(cfg.DB_MAX_IDLE_CONNS)
-	db.SetConnMaxIdleTime(time.Duration(cfg.DB_CONN_MAX_IDLE_TIME) * time.Second)
-
-	repository := &Repository{
-		newQueries(db),
-		db,
-	}
-
-	return repository, nil
+type getter interface {
+	GetInt(string) int
+	GetDuration(string) time.Duration
 }
 
-func (r *Repository) Ping() error {
-	return r.db.Ping()
+func NewRepository(uri string, getter getter) (*Repository, error) {
+	url, err := pq.ParseURL(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := sql.Open(driver, url)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(cmp.Or(getter.GetInt("DB_MAX_OPEN_CONNS"), 25))
+	db.SetMaxIdleConns(cmp.Or(getter.GetInt("DB_MAX_IDLE_CONNS"), 25))
+	db.SetConnMaxIdleTime(cmp.Or(getter.GetDuration("DB_CONN_MAX_IDLE_TIME"), 15*time.Second))
+
+	return &Repository{
+		Queries: newQueries(db),
+		db:      db,
+	}, nil
 }
 
 func (r *Repository) Close() error {

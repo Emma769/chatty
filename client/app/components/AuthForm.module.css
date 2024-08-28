@@ -17,11 +17,10 @@
   padding: 0.8em;
   font-family: inherit;
   border: 0.5px solid #555;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .group input:focus {
-  border: 0.5px solid var(--alt-clr);
   outline: 0.5px solid transparent;
 }
 
@@ -36,12 +35,38 @@
   transition: all 0.2s ease-in-out;
 }
 
-.group input:focus ~ label,
-.group input:valid ~ label {
+.group input::placeholder {
+  opacity: 0;
+}
+
+.group input:not(:placeholder-shown) ~ label,
+.group input:valid ~ label,
+.group input:focus ~ label {
   top: 0;
-  background-color: white;
+  font-size: 11px;
+  background-color: #fff;
   padding-inline: 0.3em;
-  font-size: 11.5px;
+}
+
+.group input#warn-email,
+.group input#warn-password,
+.group input#warn-username,
+.group input:not(:placeholder-shown):invalid {
+  border-color: #f784a3;
+}
+
+.group input:focus:invalid#warn-email,
+.group input:focus:invalid#warn-password,
+.group input:focus:invalid#warn-username,
+.group input:focus:invalid {
+  border-color: #555;
+}
+
+.group input:focus:valid#warn-email,
+.group input:focus:valid#warn-password,
+.group input:focus:valid#warn-username,
+.group input:not(:placeholder-shown):valid {
+  border-color: #4ee44e;
 }
 
 .btn_wrapper button {
@@ -50,7 +75,7 @@
   font-weight: 500;
   background-color: #c1c1c1;
   border: none;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -68,8 +93,8 @@
 }
 
 .danger {
-  margin-block-end: 1em;
-  font-size: 12px;
   color: red;
-  height: 0.8em;
+  font-size: calc(1rem * 0.75);
+  height: 1em;
+  margin-block-end: 0.7em;
 }

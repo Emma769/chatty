@@ -4,32 +4,33 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/emma769/chatty/internal/model"
+	"github.com/labstack/echo/v4"
+
+	"github.com/emma769/chatty/internal/data"
 	"github.com/emma769/chatty/internal/services"
-	"github.com/emma769/chatty/internal/utils"
 	"github.com/emma769/chatty/pkg/validator"
 )
 
-func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) error {
-	var in model.UserIn
+func (h *Handler) CreateUser(c echo.Context) error {
+	var in data.UserIn
 
-	if err := utils.ReadJSON(w, r, &in); err != nil {
-		return NewError(http.StatusUnprocessableEntity, err.Error())
+	if err := c.Bind(&in); err != nil {
+		return err
 	}
 
-	if err := validator.ValidateStruct(in); err != nil {
-		return NewError(http.StatusUnprocessableEntity, err.Error())
+	v := validator.New()
+
+	if errs := v.ValidateStruct(in); errs != nil {
+		return c.JSON(http.StatusUnprocessableEntity, errs)
 	}
 
-	user, err := h.User.Create(r.Context(), in)
-
+	user, err := h.User.Create(h.ctx, in)
 	if err != nil && errors.Is(err, services.ErrDuplicateKey) {
-		return NewError(http.StatusConflict, "email already in use")
+		return echo.NewHTTPError(http.StatusBadRequest, "email already in use")
 	}
-
 	if err != nil {
 		return err
 	}
 
-	return utils.WriteJSON(w, http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, user)
 }
